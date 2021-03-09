@@ -8,6 +8,7 @@ const Navbar = ({ user, handleSignOut }) => (
       {/* App Title / Icon */}
       <Nav.Item index="1">
         <NavLink to="/" className="nav-link">
+          <img src="https://picsum.photos/228" alt="" style={{ width: 40, height: 40, borderRadius: "50%", marginRight: 10 }} />
           <span className="app-title">AmplifyAgora</span>
         </NavLink>
       </Nav.Item>

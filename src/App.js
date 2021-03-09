@@ -28,14 +28,11 @@ class App extends React.Component {
   onHubCapsule = (capsule) => {
     switch (capsule.payload.event) {
       case "signIn":
-        console.log("signed in");
         this.getUserData();
         break;
       case "signUp":
-        console.log("signed up");
         break;
       case "signOut":
-        console.log("signed out");
         this.setState({ user: null });
         break;
       default:
@@ -69,7 +66,7 @@ class App extends React.Component {
                 exact
                 path="/markets/:marketId"
                 component={({ match }) => (
-                  <MarketPage marketId={match.params.marketId} />
+                  <MarketPage user={user} marketId={match.params.marketId} />
                 )}
               />
             </div>
