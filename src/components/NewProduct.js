@@ -5,13 +5,14 @@ import {
   Input,
   Notification,
   Radio,
-  Progress,
+  // Progress,
 } from "element-react";
 import { Storage, Auth, API, graphqlOperation } from "aws-amplify";
 import { createProduct } from "../graphql/mutations";
 import { PhotoPicker } from "aws-amplify-react";
 import aws_exports from "../aws-exports";
 import { convertDollarsToCents } from "../utils";
+import { Progress } from "element-react/next";
 
 const initialState = {
   description: "",
@@ -19,6 +20,7 @@ const initialState = {
   shipped: false,
   imagePreview: "",
   image: "",
+  percentUploaded: 0,
   isUploading: false,
 };
 class NewProduct extends React.Component {
@@ -29,10 +31,14 @@ class NewProduct extends React.Component {
       this.setState({ isUploading: true });
       const visibility = "public";
       const { identityId } = await Auth.currentCredentials();
-      const filename = `/${visibility}/${identityId}/${Date.now()}-${this.state.image.name
-        }`;
+      const filename = `/${visibility}/${identityId}/${Date.now()}-${this.state.image.name}`;
       const uploadedFile = await Storage.put(filename, this.state.image.file, {
         contentType: this.state.image.type,
+        progressCallback: progress => {
+          console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
+          const percentUploaded = Math.round((progress.loaded / progress.total) * 100);
+          this.setState({ percentUploaded });
+        }
       });
       const file = {
         key: uploadedFile.key,
@@ -73,6 +79,7 @@ class NewProduct extends React.Component {
       image,
       shipped,
       imagePreview,
+      percentUploaded,
       isUploading,
     } = this.state;
     return (
@@ -121,6 +128,13 @@ class NewProduct extends React.Component {
                 src={imagePreview}
                 alt="Product Preview"
                 className="image-preview"
+              />
+            )}
+            {percentUploaded > 0 && (
+              <Progress
+                className="progress"
+                type="circle"
+                percentage={percentUploaded}
               />
             )}
             <PhotoPicker
